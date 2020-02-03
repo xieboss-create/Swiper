@@ -16,6 +16,10 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
+from userapp import views
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^api/user/get_vcode', views.get_vcode),
+    url(r'^api/user/submit_vcode', views.submit_vcode),
 ]
