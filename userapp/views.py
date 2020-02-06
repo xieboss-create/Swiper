@@ -6,6 +6,7 @@ from django.shortcuts import render
 from common import stat
 from libs.http import render_json
 from userapp import logics
+from userapp.forms import UserForm, ProfileForm
 from userapp.models import User, Profile
 
 
@@ -47,5 +48,18 @@ def get_profile(request):
     #第二个：返回值为true就创建了，false就是没有创建
     profile, _ = Profile.objects.get_or_create(id=request.uid)
     return JsonResponse({'code': stat.OK, 'data': profile.to_dict()})
+
 def set_profile(request):
-    pass
+    #创建表单实例
+    user_form=UserForm(request.post)
+    profile_form=ProfileForm(request.post)
+    # 检查数据的有效性
+    if not user_form.is_valid():
+        return render_json(user_form.errors,stat.USER_FORM_ERR)
+    if not profile_form.is_valid():
+        return render_json(profile_form.errors, stat.PROFILE_FORM_ERR)
+    #保存数据
+    User.objects.filter(id=request.uid).update(**user_form.cleaned_data)
+    Profile.objects.filter(id=request.uid).update(**profile_form.cleaned_data)
+
+    return render_json()
