@@ -23,6 +23,16 @@ class User(models.Model):
     birthday = models.DateField(default='1990-01-01', verbose_name='生日')
     avatar = models.CharField(max_length=256, verbose_name='个人形象的URL')
     location = models.CharField(max_length=20, default='北京', choices=LOCATION, verbose_name='常居地')
+    @property
+    def profile(self):
+        #弊端：每次都会执行，与数据库多次交互
+        # profile,_=Profile.objects.get_or_create(id=self.id)
+        #第一次取到之后，绑定到实例，以后每次调用即可，数据库只交互一次
+        if not hasattr(self,'_profile'):
+            self._profile, _ = Profile.objects.get_or_create(id=self.id)
+        return  self._profile
+
+
 
     def to_dict(self):
         return {

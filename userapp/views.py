@@ -4,6 +4,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from common import stat
+from libs.http import render_json
 from userapp import logics
 from userapp.models import User, Profile
 
@@ -13,9 +14,9 @@ def get_vcode(request):
     phonenum = request.GET.get('phonenum')
     success = logics.send_sms(phonenum)
     if success:
-        return JsonResponse({'code': stat.OK, 'data': None})
+        return render_json()
     else:
-        return JsonResponse({'code': stat.SMS_ERR, 'data': None})
+        return render_json(code=stat.SMS_ERR)
 
 
 def submit_vcode(request):
@@ -33,12 +34,18 @@ def submit_vcode(request):
 
         # 记录用户登陆状态
         request.session['uid'] = user.id
-        return JsonResponse({'code': stat.OK, 'data': user.to_dict()})
+        return render_json({'code': stat.OK, 'data': user.to_dict()})
     else:
         return JsonResponse({'code': stat.VCODE_ERR, 'data': None})
 
 
 def get_profile(request):
     '''获取用户配置'''
+    #get_or_create先get，没有就create
+    #两个返回值
+    #第一个：返回获取到的对象
+    #第二个：返回值为true就创建了，false就是没有创建
     profile, _ = Profile.objects.get_or_create(id=request.uid)
     return JsonResponse({'code': stat.OK, 'data': profile.to_dict()})
+def set_profile(request):
+    pass
