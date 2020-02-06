@@ -1,3 +1,5 @@
+import os
+
 from django.core.cache import cache
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -5,6 +7,7 @@ from django.shortcuts import render
 # Create your views here.
 from common import stat
 from libs.http import render_json
+from libs.qn_cloud import upload_to_qiniu
 from userapp import logics
 from userapp.forms import UserForm, ProfileForm
 from userapp.models import User, Profile
@@ -63,3 +66,27 @@ def set_profile(request):
     Profile.objects.filter(id=request.uid).update(**profile_form.cleaned_data)
 
     return render_json()
+
+
+def upload_avatar(request):
+    '''头像上传
+    1.保存到本地
+    2.上传到七牛云
+    3.保存URL
+    4.删除本地文件
+    '''
+    #文件保存到本地
+    avatar_file=request.FILES.get('avatar')
+    filename='Avatar-%s'%request.uid
+    filepath='/tmp/%s'%filename
+    with open(filepath,'wb') as fp:
+        for chunk in avatar_file.chunks():
+            fp.write(chunk)
+    #文件上传七牛云
+    avatar_url=upload_to_qiniu(filename,filepath)
+    #保存URL
+    User.objects.filter(id=request.uid).update(avatar=avatar_url)
+    #
+    os.remove(filepath)
+    return render_json()
+

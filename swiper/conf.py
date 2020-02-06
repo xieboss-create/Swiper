@@ -16,3 +16,4 @@ YZX_SMS_ARGS= {
 QN_ACCESSKEY = "lNYL1NiXL-4PDuAMX9z-KH6oYqrJWh2BB9tV6bPT"
 QN_SECRETKEY = "3eQiKTiYoRFLcbVwcoukHa1WQLw8rs1l_qPmopg3"
 QN_BUCKET = '666999'
+QN_BASE_URL='http://qlo37j47z.bkt.clouddn.com'

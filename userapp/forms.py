@@ -1,6 +1,10 @@
 from django import forms
 from userapp.models import User,Profile
-
+class UserForm(forms.ModelForm):
+    '''form表单和数据模型关联起来'''
+    class Meta:
+        model=User
+        fields=['nickname','gender','birthday','location']
 class ProfileForm(forms.ModelForm):
     class Meta:
         model=Profile
